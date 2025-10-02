@@ -1,0 +1,562 @@
+./chap1 <<< ")load chap1_ut.input1"
+Input from pipe/file (batch mode)
+-> 
+Current Directory is: /home/dawsond/lexyacc/chap1
+
+ Loading file : chap1_ut.input1
+
+!Redo tests from section 1.1.3 of Kamin's text using the Pascal-style syntax
+
+3$
+3
+
+4+7$
+11
+
+x:=4$
+4
+
+x+x$
+8
+
+print x$
+4
+4
+
+y:=5$
+5
+
+seq print x; print y; x*y qes$
+4
+5
+20
+
+if y>0 then 5 else 10 fi$
+5
+
+while y>0 do
+  seq x:=x+x; y:=y-1 qes
+od$
+0
+
+x$
+128
+
+fun #1 (x) := x + 1 nuf$
+#1
+
+#1(4)$
+5
+
+fun double(x):=x+x nuf$
+double
+
+double(4)$
+8
+
+x$
+128
+
+fun setx(x,y):= seq x:=x+y; x qes nuf$
+setx
+
+setx(x,1)$
+129
+
+x$
+128
+
+fun not(boolval):= if boolval then 0 else 1 fi nuf$
+not
+
+!<> cannot be a function name since < and > are delimiters.
+fun <
+yyerror:  Line 24: syntax error, unexpected '<', expecting NAME at '<'
+> (x, y):= not(x=y) nuf$
+
+!# is not a delimiter and can be used in a name.
+fun ## (x,y):= not(x=y) nuf$
+##
+
+fun mod(m,n):=m-n*(m/n)nuf$
+mod
+
+fun gcd(m,n):=
+ seq
+  r:=mod(m,n);
+  while ##(r,0) do
+   seq
+    m:=n;
+    n:=r;
+    r:=mod(m,n)
+   qes
+  od;
+  n
+ qes
+nuf$
+gcd
+
+gcd(6,15)$
+3
+
+
+fun gcd(m,n):=
+  if n=0 then m else gcd(n,mod(m,n)) fi nuf$
+gcd
+
+gcd(6,15)$
+3
+
+
+!Normal precedence and associativity are implemented.
+5*3+7$
+22
+
+5+3*7$
+26
+
+14-7-3$
+4
+
+48/12/2$
+2
+
+10/0$
+
+***** applyValueOp: divide by zero
+
+
+!relational operators
+5<10$
+1
+
+5>10$
+0
+
+5=5$
+1
+
+10<5$
+0
+
+10<5>-1$
+1
+
+10<5>-1=1$
+1
+
+5*3>2+2$
+1
+
+5*(3>2)+2$
+7
+
+
+!Unary plus and minus
+10--5$
+15
+
+10++5$
+15
+
+10+-5$
+5
+
+10-+5$
+5
+
+10---5$
+5
+
+10+++5$
+15
+
+10-+--+5$
+5
+
+
+!Valid number range
+!max positive number
+max:=+9223372036854775807$
+9223372036854775807
+
+!The minimum negative number below cannot be entered directly because numbers
+!are first interpreted as positive then negated.
+min:=-9223372036854775808
+***** 9223372036854775808 is out of range.
+It must be between -9223372036854775808 and 9223372036854775807, inclusive.
+
+yyerror:  Line 78: syntax error, unexpected ERROR at '9223372036854775808'
+$
+
+!Negate max positive number then subtract 1 to get min negative number.
+min:=-9223372036854775807-1$
+-9223372036854775808
+
+max+min$
+-1
+
+!Numbers that are input directly must be in range LLONG_MIN to LLONG_MAX.
+d:=99999999999999999999
+***** 99999999999999999999 is out of range.
+It must be between -9223372036854775808 and 9223372036854775807, inclusive.
+
+yyerror:  Line 83: syntax error, unexpected ERROR at '99999999999999999999'
+$
+
+!Numbers that go outside of that range in calculations will wrap around.
+d:=max+1$
+-9223372036854775808
+
+d:=min-1$
+9223372036854775807
+
+
+!Keywords cannot be redefined
+fun if
+yyerror:  Line 89: syntax error, unexpected IF, expecting NAME at 'if'
+ (x) := x+5 nuf$
+
+if :=
+yyerror:  Line 90: syntax error, unexpected ASSIGN at ':='
+ 20$
+
+
+!Names may contain any char that is not a delimiter and must
+!not contain only digits.
+!Delimiters = ' ','(',')','+','-','*','/',':','=','<','>',';',',','$','!'
+~12#ab:=25$
+25
+
+~12#ab$
+25
+
+x:=15-~12#ab+7$
+-3
+
+
+!A string of digits is not a valid name.
+fun 222
+yyerror:  Line 100: syntax error, unexpected NUMBER, expecting NAME at '222'
+  (x) := x+222 nuf$
+
+
+!Inserting a non-delimiter char into a string of digits makes a valid name.
+fun 222# (x) := x+222 nuf$
+222#
+
+222#(3)$
+225
+
+x:=100-222#(3)-50$
+-175
+
+
+!Inserting a delimiter in a name causes erroneous results.
+a(b:=25$
+
+yyerror:  Line 109: syntax error, unexpected '$' at '$
+'
+
+
+!The same name may be used for a variable and a function at the same time. 
+fun inc10 (x) := x+10 nuf$
+inc10
+
+inc10:=25$
+25
+
+inc10$
+25
+
+inc10(88)$
+98
+
+
+sum:=25$
+25
+
+fun sum(x,y):= x+y nuf$
+sum
+
+sum$
+25
+
+sum(33,44)$
+77
+
+
+!Multiple assignment
+i:=j:=k:=25$
+25
+
+i$
+25
+
+j$
+25
+
+k$
+25
+
+
+!ERROR MESSAGE TESTS
+
+!Syntax Errors
+
+fun david(x,+
+yyerror:  Line 131: syntax error, unexpected '+', expecting NAME at '+'
+,z):= x+1 nuf$
+
+fun +
+yyerror:  Line 132: syntax error, unexpected '+', expecting NAME at '+'
+++(x):= x+1 nuf$
+
+abc:=)
+yyerror:  Line 133: syntax error, unexpected ')' at ')'
+25$
+
+
+!Max NAMELENG=20 but the var and function names below have 21 chars.
+abcdefghijklmnopqrstu
+***** Name exceeds 20 chars, begins: abcdefghijklmnopqrstu
+
+yyerror:  Line 136: syntax error, unexpected ERROR at 'abcdefghijklmnopqrstu'
++77-10/0+33-abc*8$
+
+fun abcdefghijklmnopqrstu
+***** Name exceeds 20 chars, begins: abcdefghijklmnopqrstu
+
+yyerror:  Line 137: syntax error, unexpected ERROR, expecting NAME at 'abcdefghijklmnopqrstu'
+(x):=x+10 nuf$
+
+
+!lhs of an assignment must be a name
+22:=
+yyerror:  Line 140: syntax error, unexpected ASSIGN at ':='
+4$
+
+
+!Multiple syntax errors in a single input.
+!First is reported, others skipped as parser resynchronizes with next $.
+!Value of ijk is not changed.
+ijk:=33$
+33
+
+ijk:=50-sum(10,*
+yyerror:  Line 146: syntax error, unexpected '*' at '*'
+)+25-4*3+sum(*,15)-48/4+)load bad_data.txt$
+
+ijk$
+33
+
+
+
+!Semantic Errors
+!
+!Since these are not syntax errors, the parser does not call yyerror().
+!Such errors are detected in the application logic and cause a value of
+!zero to be assigned to the erroneous expression.
+!So the values of c$, a$ and b$ below return 0 due to such errors.
+
+!Wrong number of arguments to mod()
+c:=17-10-mod(100)+25*3$
+
+***** Wrong number of arguments to: mod
+
+c$
+0
+
+
+!Division by zero.
+10/0$
+
+***** applyValueOp: divide by zero
+
+a:=17-10/0+25*3$
+
+***** applyValueOp: divide by zero
+
+a$
+0
+
+
+!Undefined function
+b:=33$
+33
+
+b:=25-10+square(3)-5$
+
+***** Undefined function: square
+
+b$
+0
+
+
+!Three semantic errors (1 undef var & 2 div by 0) in a single input
+!
+c:=xyz+25-10/0-3*5+10/0-8*3$
+
+***** Undefined variable: xyz
+
+***** applyValueOp: divide by zero
+
+
+***** applyValueOp: divide by zero
+
+c$
+0
+
+
+!Syntax & Semantic errors in same input
+!
+!Note that a syntax error prevents an expression from being evaluated.
+!This is demonstrated below by inserting a syntax error in the above
+!expression with three semantic errors. Since undef var & div by 0 errors
+!are detected during the eval() function, they are not reported.
+!Only the syntax error is reported.
+!
+c:=xyz+25-10/0-3*5+10/0-8*3-sum(10,*
+yyerror:  Line 184: syntax error, unexpected '*' at '*'
+)$
+
+
+quit
+quitting
+./chap1 <<< ")load chap1_ut.input2"
+Input from pipe/file (batch mode)
+-> 
+Current Directory is: /home/dawsond/lexyacc/chap1
+
+ Loading file : chap1_ut.input2
+
+!
+!MAXNAMES Test Case
+!
+!Generates error due to exceeding MAXNAMES allowed in printNames array.
+!
+!To run this test, build chap1 with the command "make testsize".
+!This will define the TESTSIZE macro and set MAXNAMES=28 in the
+!conditional compilation logic in ch1_info.h.
+!
+!The program begins with 26 built-in names in printNames.
+!The two assignments below will create the 27th and 28th names.
+!
+!The function definition tries to create the 29th name, not2, which
+!triggers the "no more room for names" error.
+!The two references to the name boolValue also trigger the same error.
+!The expression a+b then evaluates without error.
+!
+a:=25$
+25
+
+b:=100$
+100
+
+fun not2
+***** No more room for names
+
+yyerror:  Line 19: syntax error, unexpected ERROR, expecting NAME at 'not2'
+(boolValue
+***** No more room for names
+):= if boolValue
+***** No more room for names
+ then 0 else 1 fi nuf$
+
+a+b$
+125
+
+
+quit
+quitting
+./chap1 <<< ")load chap1_ut.input3"
+Input from pipe/file (batch mode)
+-> 
+Current Directory is: /home/dawsond/lexyacc/chap1
+
+ Loading file : chap1_ut.input3
+
+!
+!
+!Nested load Command Test
+!
+!Generate error due to detecting a load command inside a file
+! that is being loaded.
+!
+!First the following not function is defined and called successfully.
+!Then a load command is issued which fails because it cannot be 
+! issued from inside another file.
+!An error message is printed and the program aborts.
+!
+fun not(boolval):= 
+  if boolval then 
+  0 
+  else
+  1
+  fi
+nuf$
+not
+
+not(3)$
+0
+
+not(0)$
+1
+
+
+)load gcd_only.txt
+***** Load commands cannot occur inside a file being loaded.
+Remove the load command for file gcd_only.txt
+
+./chap1 <<< ")load chap1_ut.input4"
+Input from pipe/file (batch mode)
+-> 
+Current Directory is: /home/dawsond/lexyacc/chap1
+
+ Loading file : chap1_ut.input4
+
+!
+!
+!Nested sload Command Test
+!
+!Generate error due to detecting a sload (silent load - noecho) command
+! inside a file that is being loaded.
+!
+!First the following not function is defined and called successfully.
+!Then a sload command is issued which fails because it cannot be
+! issued from inside another file.
+!An error message is printed and the program aborts.
+!Note that the filename in the sload command is not echoed in the result file
+! due to the global variable echo being set to false when lex reads ")sload".
+!
+fun not(boolval):= 
+  if boolval then 
+  0 
+  else
+  1
+  fi
+nuf$
+not
+
+not(3)$
+0
+
+not(0)$
+1
+
+
+)sload 
+***** Load commands cannot occur inside a file being loaded.
+Remove the load command for file gcd_only.txt
+
+
+
+Test an open file error
+
+
+./chap1 <<< ")load does_not_exist.txt"
+Input from pipe/file (batch mode)
+-> fopen() error: No such file or directory
+
+***** filename= does_not_exist.txt
+

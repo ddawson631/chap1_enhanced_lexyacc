@@ -1,0 +1,24 @@
+!
+!MAXNAMES Test Case
+!
+!Generates error due to exceeding MAXNAMES allowed in printNames array.
+!
+!To run this test, build chap1 with the command "make testsize".
+!This will define the TESTSIZE macro and set MAXNAMES=28 in the
+!conditional compilation logic in ch1_info.h.
+!
+!The program begins with 26 built-in names in printNames.
+!The two assignments below will create the 27th and 28th names.
+!
+!The function definition tries to create the 29th name, not2, which
+!triggers the "no more room for names" error.
+!The two references to the name boolValue also trigger the same error.
+!The expression a+b then evaluates without error.
+!
+a:=25$
+b:=100$
+fun not2(boolValue):= if boolValue then 0 else 1 fi nuf$
+a+b$
+
+quit$
+

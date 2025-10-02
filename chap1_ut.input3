@@ -1,0 +1,27 @@
+!
+!
+!Nested load Command Test
+!
+!Generate error due to detecting a load command inside a file
+! that is being loaded.
+!
+!First the following not function is defined and called successfully.
+!Then a load command is issued which fails because it cannot be 
+! issued from inside another file.
+!An error message is printed and the program aborts.
+!
+fun not(boolval):= 
+  if boolval then 
+  0 
+  else
+  1
+  fi
+nuf$
+not(3)$
+not(0)$
+
+)load gcd_only.txt
+gcd(225,300)$
+
+quit$
+

@@ -1,0 +1,29 @@
+!
+!
+!Nested sload Command Test
+!
+!Generate error due to detecting a sload (silent load - noecho) command
+! inside a file that is being loaded.
+!
+!First the following not function is defined and called successfully.
+!Then a sload command is issued which fails because it cannot be
+! issued from inside another file.
+!An error message is printed and the program aborts.
+!Note that the filename in the sload command is not echoed in the result file
+! due to the global variable echo being set to false when lex reads ")sload".
+!
+fun not(boolval):= 
+  if boolval then 
+  0 
+  else
+  1
+  fi
+nuf$
+not(3)$
+not(0)$
+
+)sload gcd_only.txt
+gcd(225,300)$
+
+quit$
+
