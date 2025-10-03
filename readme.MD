@@ -9,7 +9,7 @@ My enhancements replaced the original Lisp-style syntax with a Pascal-like synta
 
 The following document compares the C vs lex/yacc versions, describes the lex and yacc specs and related changes required to use the generated parser. 
 
-- __[Comparison](docs/comparison.pdf)__ - program organization, grammar, lex/yacc specs, old vs. ndw Unit Test results
+- __[Comparison](docs/comparison.pdf)__ - program organization, grammar, lex/yacc specs, old vs. new Unit Test results\
       NOTE: If this PDF does not render well on github then please download the corresponding DOCX for a better viewing experience offline. The DOCX & PDF were created with WPS Office.
 
 The information below presents an interactive run, Unit Test (UT) description and a listing of the Makefile.
