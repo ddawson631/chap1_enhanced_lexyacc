@@ -63,7 +63,7 @@ void yyerror(const char *s);
 %type <nameIndex> fundef;
 %type <nl> param_list param_list_tail;
 
-//Below are the yacc rules cited in the above table along with their actions (C code in braces).
+//Below are the yacc rules and their actions (C code in braces).
 //The actions are executed by the parser when the input matches a rule.
 //Regarding rule symbols, nonterminals are in lowercase, terminals are in uppercase or single quotes. 
 //The actions build an AST for the expr or fundef that was input.
