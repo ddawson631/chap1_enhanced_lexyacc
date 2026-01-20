@@ -29,7 +29,7 @@ void yyerror(const char *s);
 %define parse.error detailed   //Allows yyerror messages to report the token it expected.
 
 //Define tokens that are made of multiple characters.
-//The patterns that they represent are defined in the lexer spec. See chap1.l below.
+//The patterns that they represent are defined in the lexer spec.
 //The ERROR token is an exception. It has no pattern defined in the lexer.
 //And since it is not a part of any grammar rule defined below, returning it from the lexer causes
 //a syntax error which triggers a call to yyerror() and a transfer of control to the error rule
@@ -41,9 +41,9 @@ void yyerror(const char *s);
 %token ASSIGN IF THEN ELSE FI WHILE DO OD SEQ QES FUN NUF ERROR
 
 //Declare Associativity and Precedence. The order of the following lines determine precedence
-//from lowest to highest. So ′;′ and ′,′ have lowest precedence. 
-//′*′ and ′/′ have highest precedence among the binary operators.
-//UPLUS & UMINUS tags are used to give unary ′+′ and ′-′ the highest precedence of all. 
+//from lowest to highest. So ';' and ',' have lowest precedence. 
+//'*' and '/' have highest precedence among the binary operators.
+//UPLUS & UMINUS tags are used to give unary '+' and '-' the highest precedence of all. 
 %left ';' ','
 %right ASSIGN
 %left PRINT
@@ -54,7 +54,7 @@ void yyerror(const char *s);
 %nonassoc UMINUS
 //Note that the precedence of parentheses was not declared. 
 //Per perplexity.ai, the parentheses rule, under exp rules below, effectively gets the
-//highest precedence ″by its nature″ since it causes the parser to reduce the enclosed expression
+//highest precedence "by its nature" since it causes the parser to reduce the enclosed expression
 //before applying other operations outside the parentheses.
 
 //Declare types of all LHS symbols in yacc rules.
@@ -93,7 +93,7 @@ stmt_list:    /* empty */
                                       if (!readfile) printf(PROMPT); //display prompt if not reading file 
                                    }
 //The result of a fundef is to display the function name.
-//It′s logic is not evaluated until a function call occurs in an expr.
+//Its logic is not evaluated until a function call occurs in an expr.
          |    stmt_list fundef '$' { //if no error then display function name of fundef
                                       if (!error)
                                       {
@@ -107,7 +107,7 @@ stmt_list:    /* empty */
 //When the parser encounters a syntax error, yyerror is called and control returns to the
 //action for this special error token. The $ (end of input marker) is the synchronizing token.
 //The parser will skip chars in the input stream until it reads the next $ then it will resume
-//nomal parsing of the next input.
+//normal parsing of the next input.
          |    error '$' {
                            yyclearin; // discard lookahead
                            yyerrok;   // clear the error state
@@ -120,7 +120,7 @@ stmt_list:    /* empty */
          ;
 
 //fundef → fun name ( param_list ) := expr nuf
-//When a function def is evaluated, the result is to displays the name of the defined function.
+//When a function def is evaluated, the result is to display the name of the defined function.
 //So the line $$ = $2 in the action assigns value of NAME to the fundef symbol on the LHS. 
 fundef: FUN NAME '(' param_list ')' ASSIGN expr NUF {
                                                       newDef($2, $4, $7); //create a new function def
